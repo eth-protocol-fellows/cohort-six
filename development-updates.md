@@ -10,6 +10,7 @@ Phase one is the very beginning of the cohort. The first few weeks are dedicated
 
 | Name/GH                                                | Week 0                                                    | Week 1 | Week 2 |
 | ------------------------------------------------------ | --------------------------------------------------------- | ------ | ------ |
+| [Dhairyshil Kamble](https://github.com/Dhairyshil24) | [Update 0 ](https://hackmd.io/@dhairyshil/ByceoW27ee)  | 
 | [Harsh Pratap Singh](https://github.com/harsh-ps-2003) | [Update 0 ](https://hackmd.io/@harsh-ps-2003/rk4ZFSwXxx)  |        |        |
 | [Mario](https://github.com/taxmeifyoucan/)             | [Update 0 ](https://notes.ethereum.org/@MarioHavel/week0) |        |        |
 | [Owanikin](https://github.com/owanikin) | [Update 0 ](https://hackmd.io/@ZpBFaS-NSO-5Xkdm4jwolg/ByOCT4sQlg) |        |        |

@@ -265,3 +265,71 @@ FOCIL facilitates scaling L1 while retaining censorship-resistance. The goal of 
 By Nimbus Team
 
 The Nimbus EL discovers peers using the Discovery V4 protocol. The devp2p network is gradually shifting to using the Discovery V5 protocol, and it would internally align Nimbus EL's implementation with the Nimbus CL's V5-based implementation, to share a codebase. The goal of this project is to add V5 support to the Nimbus EL.
+
+### Besu / Erigon / Geth / Nethermind / Nimbus EL / Reth: Pureth (EIP-7919)
+By Etan Kissling (Nimbus)
+
+Pureth aims at making Ethereum data easier to access and verify without relying on trusted RPC providers or third-party indexers. This improves UX of wallets (verifiable eth_getLogs response with proof of correctness and completeness), reduces the need for third-party indexers for dApps, and reduces gas cost when consuming partial data in smart contracts (e.g., proving presence of a single log within a receipt as part of an L2 bridge). We are looking for a prototype EL implementation (any EL) that serves JSON-RPC with proofs. The implementation will be used as part of a devnet to collect feedback from light client developers (e.g., wallets, dApps).
+
+### Prysm: Migrate e2e to Kurtosis
+
+By Prysm
+
+For the longest time Prysm has had a suite of end-to-end (e2e) tests: https://github.com/OffchainLabs/prysm/tree/develop/testing/endtoend. The core part of it are evaluators that assert the state of the e2e run: https://github.com/OffchainLabs/prysm/tree/develop/testing/endtoend/evaluators. Any evaluator failure causes the whole run to fail. During recent forks it's been increasingly hard for us to add new evaluators, and the maintanance associated with e2e keeps growing with each fork. Some time ago the EF EthPandaOps team began using Kurtosis as the primary tool for running devnets: https://github.com/kurtosis-tech/kurtosis. (specifically the Ethereum Package: https://github.com/ethpandaops/ethereum-package). They also developed Assertoor whose purpose is roughly equivalent to our e2e - assessing the state of the chain: https://github.com/ethpandaops/assertoor. We think it's about time Prysm switched from a built-from-scratch e2e framework to using Kurtosis with Assertoor as our e2e component. This means moving all our e2e setup into Kurtosis and recreating our evaluators using Assertoor. What is most likely outside of scope for this project is integrating this new e2e setup into our CI/CD pipeline.
+
+### Prysm: Lazy Slasher
+
+By Prysm
+
+Implement https://ethresear.ch/t/a-lazy-approach-to-slashers/22041 which is a "lazy" slasher implementation that can potentially strengthen the slashing protection mechanism. There is already an initial tracking issue on Github that lists a possibly non-exhaustive list of tasks that are required for the lazy slasher to work: https://github.com/OffchainLabs/prysm/issues/15066.
+
+### Prysm: SSZ Query Language
+
+By Prysm
+
+Design and implement a query language for querying arbitrary SSZ trees. Possible features include multiple fields, filtering, anchored proofs, etc.
+
+example of such query:
+
+```
+{
+ "anchor": "<stateRoot>",
+ "querySpec": {
+    "validators": {
+        "range": [0, 100],
+        "filter": {
+            "slashed": true,
+            "effective_balance": {
+                "gte": 32
+             }
+         },
+    "fields": ["effective_balance", "some_other_field"]
+    }
+ }
+ "includeProof": true
+}
+```
+
+More info can be found here: https://hackmd.io/@etan-status/electra-lc#SSZ-query-language
+
+### Prysm: Merkle Proofs of Everything
+
+By Prysm
+
+In the Prysm codebase there is a https://github.com/OffchainLabs/prysm/blob/develop/beacon-chain/state/state-native/proofs.go file that includes functionality to calculate a Merkle proof of the current sync committee, next sync committee and the finalized checkpoint's root. In case we'd like a proof for anything else, a new function must be defined just for that one proof. Ideally we'd like a generic way of producing arbitrary proofs for states and blocks, although it should be possible to support arbitrary SSZ objects.
+
+### Implement the Fast Confirmation Rule
+
+by the EF Protocol Consensus Team
+
+The Fast Confirmation Rule is an algorithm that, assuming low latency, allows determining in 1-2 slots only that a block will always be part of the canonical chain without having to wait for finalization.
+
+The objective of this project is to implement the Fast Confirmation Rule in one of the CL clients. Ideally, not Teku or Prysm as these two teams already have plans to work on this feature.
+
+To know more about this:
+- [Devcon Presentation](https://www.youtube.com/watch?v=p7JPRTELnJc&embeds_referring_euri=https%3A%2F%2Fapp.devcon.org%2F&source_ve_path=OTY3MTQ)
+- [PEEPanEIP Presentation](https://www.youtube.com/watch?v=dZU-Ch22MKY)
+- [ethresear.ch blo post](https://ethresear.ch/t/confirmation-rule-for-ethereum-pos/15454)
+- [Detailed technical report](https://arxiv.org/abs/2405.00549)
+- Current alternative specifications: [https://github.com/ethereum/consensus-specs/pull/3339](https://github.com/ethereum/consensus-specs/pull/3339), [https://github.com/mkalinin/confirmation-rule/blob/master/confirmation_rule.py](https://github.com/mkalinin/confirmation-rule/blob/master/confirmation_rule.py)
+

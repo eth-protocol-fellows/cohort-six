@@ -18,6 +18,7 @@ Phase one is the very beginning of the cohort. The first few weeks are dedicated
 | [Brage](https://github.com/2xic)                       | [Update 0](https://hackmd.io/@2xic/ByG_dri7xg)                    |        |        |
 | [Pelle](https://github.com/pellekrab)                       | [Update 0](https://hackmd.io/@pellekrab/HJ0-RTv7eg)                    |        |        |
 | [Grapebaba](https://github.com/GrapeBaBa)                       | [Update 0](https://hackmd.io/@grapebaba/SJ8QHComgl)                    |        |        |
+| [Poulav](https://github.com/PoulavBhowmick03)          | [Update 0](https://hackmd.io/@Odinson/ByDJiD27eg) |        |        |
 
 ## Phase 2: Deep dive
 

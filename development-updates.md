@@ -10,17 +10,15 @@ Phase one is the very beginning of the cohort. The first few weeks are dedicated
 
 | Name/GH | Week 0 | Week 1 | Week 2 |
 |---------|--------|--------|--------|
+| Brage ([GitHub](https://github.com/2xic)) | [Update 0](https://hackmd.io/@2xic/ByG_dri7xg) |        |        |
 | Chanderprakash Sharma ([GitHub](https://github.com/chanderprakash20)) | [Update 0](https://hackmd.io/@Chanderprakash12/H1kQcW2mxe) |        |        |
-| Name/GH                                                | Week 0                                                    | Week 1 | Week 2 |
-| ------------------------------------------------------ | --------------------------------------------------------- | ------ | ------ |
-| [Harsh Pratap Singh](https://github.com/harsh-ps-2003) | [Update 0 ](https://hackmd.io/@harsh-ps-2003/rk4ZFSwXxx)  |        |        |
-| [Mario](https://github.com/taxmeifyoucan/)             | [Update 0 ](https://notes.ethereum.org/@MarioHavel/week0) |        |        |
-| [Owanikin](https://github.com/owanikin) | [Update 0 ](https://hackmd.io/@ZpBFaS-NSO-5Xkdm4jwolg/ByOCT4sQlg) |        |        |
-| [Shane](https://github.com/shane-moore/)               | [Update 0 ](https://hackmd.io/BcOdWcPWQUmWUQqy2MktRQ)     |        |        |
-| [Irene](https://github.com/IreneBa26)                  | [Update 0 ](https://hackmd.io/@bfhksCOrQMuOAxlbaEd4OQ/SJoSdJiXxe)     |        |        |
-| [Brage](https://github.com/2xic)                       | [Update 0](https://hackmd.io/@2xic/ByG_dri7xg)                    |        |        |
-| [Pelle](https://github.com/pellekrab)                       | [Update 0](https://hackmd.io/@pellekrab/HJ0-RTv7eg)                    |        |        |
-| [Grapebaba](https://github.com/GrapeBaBa)                       | [Update 0](https://hackmd.io/@grapebaba/SJ8QHComgl)                    |        |        |
+| Grapebaba ([GitHub](https://github.com/GrapeBaBa)) | [Update 0](https://hackmd.io/@grapebaba/SJ8QHComgl) |        |        |
+| Harsh Pratap Singh ([GitHub](https://github.com/harsh-ps-2003)) | [Update 0](https://hackmd.io/@harsh-ps-2003/rk4ZFSwXxx) |        |        |
+| Irene ([GitHub](https://github.com/IreneBa26)) | [Update 0](https://hackmd.io/@bfhksCOrQMuOAxlbaEd4OQ/SJoSdJiXxe) |        |        |
+| Mario ([GitHub](https://github.com/taxmeifyoucan/)) | [Update 0](https://notes.ethereum.org/@MarioHavel/week0) |        |        |
+| Owanikin ([GitHub](https://github.com/owanikin)) | [Update 0](https://hackmd.io/@ZpBFaS-NSO-5Xkdm4jwolg/ByOCT4sQlg) |        |        |
+| Pelle ([GitHub](https://github.com/pellekrab)) | [Update 0](https://hackmd.io/@pellekrab/HJ0-RTv7eg) |        |        |
+| Shane ([GitHub](https://github.com/shane-moore/)) | [Update 0](https://hackmd.io/BcOdWcPWQUmWUQqy2MktRQ) |        |        |
 
 ## Phase 2: Deep dive
 

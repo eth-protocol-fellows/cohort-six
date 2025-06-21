@@ -40,6 +40,7 @@ Phase one is the very beginning of the cohort. The first few weeks are dedicated
 | [thinkAfCod](https://github.com/thinkAfCod)            | [Update 0](https://hackmd.io/@iMlbgmAwT3etbc92P38qlA/r1uuataQgx)                        |        |        |
 | [Vineet](https://github.com/vineetpant)                | [Update 0](https://hackmd.io/@vineetpant/HJPoBQ3mel)                                    |        |        |
 | [Prototype](https://github.com/ShiroObiJohn)           | [Update 0](https://hackmd.io/@ShiroObiJohn/H1f3o_TXgg)                                  |        |        | 
+| [Skanda](https://github.com/skandabhat)                | [Update 0](https://hackmd.io/@skandabhat/HJvM0bVNlg)                                    |        |        | 
 
 ## Phase 2: Deep dive
 

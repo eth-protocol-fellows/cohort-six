@@ -84,6 +84,7 @@ With the gained insight into the protocol, the following weeks serve as a deep d
 | [Peter](https://github.com/pbkompasz)                  |                                                                   |        |        |                  |
 | [Poulav](https://github.com/PoulavBhowmick03)          | [Update 3](https://hackmd.io/@Odinson/SJaiTbuHxe)                 | [Update 4](https://hackmd.io/@Odinson/r1dpjDb8xl)        |        |                  |
 | [Prototype](https://github.com/ShiroObiJohn)           |                                                                   |        |        |                  |
+| [Preeti](https://github.com/pr9t) | [Update 3](https://hackmd.io/@r6e5m-q5TYu-8USRfQbTkQ/B1UnddG8le) | [Update 4](https://hackmd.io/@r6e5m-q5TYu-8USRfQbTkQ/B1WJ4brLgx) |
 | [Rahul](https://github.com/guha-rahul)                 |                                                                   |        |        |                  |
 | [Rimeeeeee](https://github.com/Rimeeeeee)              |        [Update 3](https://hackmd.io/@Rimeeeeee/HyUVdq5rgx)                                                           |        |        |                  |
 | [Ritesh](https://github.com/Dyslex7c)                  | [Update 3](https://hackmd.io/@rhinorit/B1sGdVFBeg)                |        |        |                  |

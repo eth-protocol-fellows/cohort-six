@@ -58,7 +58,6 @@ Phase one is the very beginning of the cohort. The first few weeks are dedicated
 ## Phase 2: Deep dive
 
 With the gained insight into the protocol, the following weeks serve as a deep dive into a chosen topic. Read about [proposed projects](/projects/project-ideas.md) and choose one to dive into. By the first month, you should finish the initial research about a specific problem and propose a project, including a roadmap. Get some ideas from the [project proposal template](projects/project-template.md).
-
 | Name/GH                                                | Week 3                                                                          | Week 4                                                                                  | Week 5 | Project Proposal |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------ | ---------------- |
 | [Akash](https://github.com/h3lio5)                     |                                                                                 |                                                                                         |        |                  |
@@ -102,7 +101,7 @@ With the gained insight into the protocol, the following weeks serve as a deep d
 | [Veer](https://github.com/VeerChaurasia)               |                                                                                 |                                                                                         |        |                  |
 | [Vlladin](https://github.com/vlladin)                  | [Update 3](https://hackmd.io/@pntOFrSIRIap6AM9qJWuQQ/HJgR87SUll)                | [Update 4](https://hackmd.io/@pntOFrSIRIap6AM9qJWuQQ/HJMvnES8el)                        |        |                  |
 | [Utsav](https://github.com/x-senpai-x)                 | [Update 3](https://hackmd.io/@CwibKqIARdCG7pJIqwzJeg/S1cNU1yIle)                |                                                                                         |        |                  |
-| [Vukašin Marković](https://github.com/sntntn)          | [Update 3](https://hackmd.io/@sntntn/ryq7TUuHlx)                                | [Update 4](https://hackmd.io/@sntntn/BJWPudM8ge)                                        |        |                  |
+| [Vukašin Marković](https://github.com/sntntn)          | [Update 3](https://hackmd.io/@sntntn/ryq7TUuHlx)                                | [Update 4](https://hackmd.io/@sntntn/BJWPudM8ge)                                        |        | [Grandine: Implementing Tokio Tracing for Debugging and Performance Analysis](projects/Grandine-Implementing-Tokio-Tracing-For-Debugging-And-Performance-Analysis.md) |
 | [yunsig](https://github.com/Ham3798)                   |                                                                                 |                                                                                         |        |                  |
 
 ## Phase 3: Execution

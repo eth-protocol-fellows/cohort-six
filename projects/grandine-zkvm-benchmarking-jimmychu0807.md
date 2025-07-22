@@ -48,7 +48,7 @@ We also want to test out the scalability when running with numerous (100+) valid
 ### Mentors
 
 - [Saulius Grigaitis](https://discord.com/channels/945714351841607690/1253330175261806634), Grandine team (actively interact with him)
-- [Unnawut](https://t.me/Kami_official0531), Ream team (learn from his work)
+- [Unnawut](https://t.me/unnawut), Ream team (learn from his work)
 - [Jun Song](https://github.com/syjn99), cohort 6 fellow (learn from his work)
 
 ## Resources

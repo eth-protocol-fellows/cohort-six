@@ -59,8 +59,9 @@ We also want to test out the scalability when running with numerous (100+) valid
 
 ### Fellows
 
-- Dr. Klaus (github: @tk)
-- Aman (github: @tk)
+* [Aman](https://github.com/0xprivateChaos)
+* [Jimmy Chu](https://github.com/jimmychu0807)
+* [Ritesh Das](https://github.com/Dyslex7c)
 
 ## Resources
 

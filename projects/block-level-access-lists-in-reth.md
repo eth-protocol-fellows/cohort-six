@@ -159,6 +159,7 @@ The end project will successfully include a working prototype that adds complete
 
 ### Mentor
 * [Mattsse](https://github.com/mattsse)
+* [Rakita](https://github.com/rakita)
 
 ## Resources
 * [BAL Eip](https://eips.ethereum.org/EIPS/eip-7928)

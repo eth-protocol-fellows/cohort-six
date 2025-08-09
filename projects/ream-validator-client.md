@@ -150,16 +150,16 @@ To accomplish this the validator client will implement the following:
 
 ### Validator Operations:
 
-**MUST** determine its duty for current slot
-**MUST** be able to maintain secure keystores
-**MUST** be able to sign blocks
-**MUST** be able to propose blocks
-**MUST** be able to attest (vote)
+- **MUST** determine its duty for current slot
+- **MUST** be able to maintain secure keystores
+- **MUST** be able to sign blocks
+- **MUST** be able to propose blocks
+- **MUST** be able to attest (vote)
 
 ### Post Quantum:
 
-**MUST** use Post Quantum Signatures for signing
-**MUST** aggregate Post Quantum Signatures
+- **MUST** use Post Quantum Signatures for signing
+- **MUST** aggregate Post Quantum Signatures
 
 ## Collaborators
 

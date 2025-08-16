@@ -1,9 +1,4 @@
----
-title: 'Project Proposal: Rust KZG - From Education to Production-Grade Optimization'
-
----
-
-# Project Proposal: Rust KZG - From Education to PeerDAS Production-Grade Optimization
+# Grandine Rust KZG - From Education to PeerDAS Production-Grade Optimization
 
 
 **TLDR**: This project takes a dual-track approach to the `rust-kzg` library. The primary goal is to create the definitive educational resource—a comprehensive tutorial—for developers working with KZG commitments in Rust. The second, more advanced goal is to implement significant performance optimizations for the library's core cryptographic operations, making it faster and more efficient for demanding production environments like Ethereum's PeerDAS.

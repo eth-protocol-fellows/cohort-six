@@ -158,4 +158,4 @@ The final weeks of the cohort should mark the finalization of your project. Subm
 
 | Name/GH | Final report | Project presentation |
 |---------|--------------|----------------------|
-| [Jimmy Chu](https://github.com/jimmychu0807) | [Brevis Pico zkVM Integration & Benchmarking of the Block State Transition Function in zkVM for Grandine](https://github.com/jimmychu0807/ethereum-zkvm-study/blob/main/weekly-update/final-report.md) | |
+| [Jimmy Chu](https://github.com/jimmychu0807) | [Brevis Pico zkVM Integration & Benchmarking of the Block State Transition Function in zkVM for Grandine](https://github.com/jimmychu0807/ethereum-zkvm-study/blob/main/weekly-update/final-report.md) | [Presentation Deck](https://docs.google.com/presentation/d/1a1n-GMzIe9ALcUcrq4O_Tme6zmKSvh-lfnIxbqo7l5o/edit?usp=sharing) |

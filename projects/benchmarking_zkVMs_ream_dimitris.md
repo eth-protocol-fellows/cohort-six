@@ -1,18 +1,18 @@
 # Benchmarking zkVMs on the Ream consensus client
 
-Benchmark proof generation and validation of zero-knowledge virtual machines (zkVMs) on state transition functions
+Benchmark zero-knowledge proof generation and validation of state transition functions (STFs) for beacon chain and lean consensus.
 
 ## Motivation
 
-Ream client is a consensus client that will be put in production once the Beam Chain replaces the Beacon Chain. The project is related to the consensus layer and the Beam Chain. In particular, the Beam Chain introduces SNARK proofs on every operation on the state transition functions. The computational costs reduce since the rest of the validator nodes only need to verify the proofs instead of recomputing the new block. This way, it will be feasible to validate and stake from devices with limited resources e.g. smart watches.
+Ream is a lean consensus client. During the first months of its development an implementation of beacon chain consensus was also developed mainly for testing and obtaining experience. The present project follows the same path. First we worked on proofs of STFs of the beacon chain and then on STFs on lean consensus. Lean consensus introduces SNARK proofs on every operation on the chain. This results in reduced computation costs since validator nodes only need to verify the proofs instead of repeating the computation of the new block. This way, it will be feasible to run a validator node on devices with limited resources e.g. smartphones and smart watches.
 
 This project provides two main benefits to the Ream team.
 - It will be the first systematic study of the zkVM market that will be useful when Beam Chain specs become available and the team starts building.
 - It helps identifying design decisions that are incompatible with zkVMs and possible bottlenecks.
 
-## Project description
+## Existing work 
 
-The project will build on top of the work done by the Ream team. Currently, the implementation includes [sp1](https://github.com/ReamLabs/consensp1us) and [risc0](https://github.com/ReamLabs/consenzero-bench) zkVMs where:
+The project builds on top of the work done by the Ream team. Currently, the implementation includes [sp1](https://github.com/ReamLabs/consensp1us) and [risc0](https://github.com/ReamLabs/consenzero-bench) zkVMs where:
 - Only one state transition function can be benchmarked on each run (not the whole block body).
 - Benchmarks include only cycle counts and execution time but not proof generation, verification time and profiling results.
 - The benchmarks only pick a few data points to compare however the results of sp1 and risc0 have not been directly compared.
@@ -35,34 +35,31 @@ The project structure is:
 
 The structure is similar in both cases: `lib` provides functionality, there is a script which automates building, running, proving and validating, there is a module that sets up the zkVM environment for proving and finally there is the guest code i.e. the state transition functions that will run in the zkVM.
 
-### Work during the fellowship
+## Work during the fellowship
 
-The first part of the project involves expanding the tests to other zkVMs. I am working on OpenVM and Utsav has results on Jolt and possibly ZisK. There are differences among zkVMs but the main principle remains largely the same. We will reuse the `lib` modules, guest code and some scripts but we will build from scratch the code of the host. Afterwards, there are many directions that we could take:
-1. Expand current benchmarks to more zkVMs.
-2. Include time of proof generation and time of validation in the set of benchmarks.
-3. Implement a generalised framework such as the [ere interface](https://github.com/eth-act/ere) that allows testing of various zkVMs.
+### zkVM on the beacon chain 
+The first part of the project expanded introduced other zkVMs. I worked on OpenVM and Utsav on Jolt, Pico and ZisK as well as a unifying framework. There are differences among zkVMs but the main principle remains largely the same. We will reuse the `lib` modules, guest code and some scripts but we built from scratch the code of the host. We also implemented elapsed time measurement and execution cycles. Utsav's framework is sufficient for our current purposes. We were advised to look at [ere interface](https://github.com/eth-act/ere) but it was not priority back in August. It will be interesting to look into it in the future as an abstraction of the second part of the project.
 
-This is a collective decision to make but I consider that creating useful benchmarks is the highest priority. Maybe, the work necessary for a framework will extend beyond the current fellowship but option 2. above seems feasible.
+### zkVM on lean consensus
+Consensus is achieved using 3-slot-finality and in particular a simplified version 3SF-mini. Proving is optional, it is initialised with a cli flag. We created a new service in Ream `LeanProverService` that is called by the blockproposer concurrently with `ValidatorService`. Again we prove the execution of STFs. For the moment, we generate a proof every 200 slots due the because proof generation extends beyond the slot that it was initialised. It takes around 6mins in a 16GB Macbook to generate the first proof at slot 2 while the slot lasts 4secs. As time passes the state gets larger leading to 12, 14, ... mins of proving which result in concurrent provings taking place leading to memory overflow. With this set up we managed to reach up to slot 1000.
 
 # Specification
+<!-- Use the correct tense and update what happened in the first part of the internship. ADD Utsav's contributions! -->
+Implementation of the first part of the project was straightforward. The guest code was found in `consenzero-bench/methods/guest/src/main.rs` of risc0 or `consensp1us/program/operations/src/main.rs` of sp1. The same was done with modules in `lib`. The host program was built according to the SDK instruction provided by each zkVM. In the case of OpenVM for example, the instructions are found in the SDK section of the [OpenVM book](https://book.openvm.dev/advanced-usage/sdk.html#using-stdin) specifying:
 
-Implementation of the first part of the project is straightforward. The guest code can be found in `consenzero-bench/methods/guest/src/main.rs` of risc0 or `consensp1us/program/operations/src/main.rs` of sp1. The same will be done with modules in `lib`. The host program will be built according to the instructions found in the SDK section of the [OpenVM book](https://book.openvm.dev/advanced-usage/sdk.html#using-stdin). There are detailed instructions on
 - the preambles that should be added to the guest program
 - the code to be added in host to build, transpile and prove the guest
 
-Once this is done for a single zkVM it would be easy to reproduce it on other zkVMs as well.
-The state transition functions benchmarked by ReamLabs on SP1 and RISC Zero have been executed by Utsav on Jolt and he is waiting for a new feature Jolt is working on which will add functionality to track Guest's RISC-V cycle runs so that a detailed benchmarking report can be created and compared directly with SP1 and RISC Zero results.
+<!-- TODO-Utsav: Add your part about Jolt, Pico, Zisk  -->
 
-The second part is more complicated. The main goal is to extend benchmarks to measure proving time and validation time of state transition functions. Currently, proving the execution of a single state transition function takes too much time. The identification of bottlenecks will provide useful information about zkVMs which will be necessary for Beam Chain implementation in the future (beginning of 2026).
+We have not implemented GPU optimization or any other optimization for proof generation. Generating a proof for a single test of a single STF operation currently crashes our laptops with 16GB ram. On an old PC with ryzen 3400g and 32GB of RAM it took about 10h to generate a proof with OpenVM for the test  `attestation_invalid_correct_attestation_included_after_max_inclusion_slot`. This creates a major issue in creating tests with extensive coverage that provide meaningful insights about various zkVMs. To add to this, different zkVMs have optimized for different scenarios GPU vs CPU proving, high vs low number of execution cycles etc. 
+Our project will be able to provide the following metrics: execution time, execution cycles (if implemented) and proof generation time for one or very few test case.
 
-The most direct method to proceed after completing the first part is to extend our implementation to include the new benchmarks in OpenVM, RISC Zero, SP1 and Jolt. There may be a more modular way to proceed by using the [ere interface](https://github.com/eth-act/ere). For the moment, the ere framework supports the 4 zkVMs but the current example for the guest program is a fibonacci sequence found in `ere/tests`. We need to include our guest program and then try to implement benchmarks. I cannot estimate the amount of work needed for this.
+The second part of the project is more complicated, it involves lean consensus. Lean consensus is under development with many questions still open. At the same time, as we have already experienced in the first part of the project zkVMs are still slow for the our use cases. These two factors induce some limitation to our project. We generate a proof every 200 slots and we did not manage to test validation because setting up a network with proving created issues both in inside docker and locally. Our design, introduces proving as an additional feature to the Ream client as we explain in the associated [draft PR](https://github.com/ReamLabs/ream/pull/835).
 
-However looking at ere it seems we still need to add our own guest and host code that doesn't make ere much different than separately benchmarking in different repositories. Instead we could take a different approach and create a common parser to plot benchmarks from multiple zkVms on the same chart.
-
-When we have sufficient benchmarking and profiling results, we would be able to comment on the current state of transition functions, identify bottlenecks and find ways to optimize them (snarkifying them in order to run inside zkVM environment efficiently) and implement recursive proving across different zkVM systems. Once this is done we should be able to combine all the state transition functions and instead run the whole block body inside the zkVM.
-
+<!-- I have to include details i.e. snippets about our new enum ? LeanProverService -->
 ## Roadmap
-
+<!-- Add what our draft PR has along with Unnawut's suggestions -->
 1. Run the guest code as found in RISC Zero and SP1 repo inside OpenVM, Jolt, ZisK and Pico and any other zkVM if time allows.
 2. Include proving and validation benchmarks in the above mentioned zkVMs by mid September.
 3. Compare the results obtained and find key bottlenecks and ways to optimize the guest code along with the state transition functions themselves by end of September.

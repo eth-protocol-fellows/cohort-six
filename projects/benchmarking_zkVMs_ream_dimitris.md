@@ -10,7 +10,7 @@ This project provides two main benefits to the Ream team:
 - It is the first systematic study of the zkVM market that will be useful when Beam Chain specs become available and the team starts building.
 - It helps identify design decisions that are incompatible with zkVMs and possible bottlenecks.
 
-## Existing work 
+## Existing work
 
 The project builds on top of the work done by the Ream team. Currently, the implementation includes [sp1](https://github.com/ReamLabs/consensp1us) and [risc0](https://github.com/ReamLabs/consenzero-bench) zkVMs where:
 
@@ -53,10 +53,10 @@ Implementation of the first part of the project was straightforward. The guest c
 
 <!-- TODO-Utsav: Add your part about Jolt, Pico, Zisk  -->
 
-We have not implemented GPU optimization or any other optimization for proof generation. Generating a proof for a single test of a single STF operation currently crashes our laptops with 16GB RAM. On an old PC with a Ryzen 3400G and 32GB of RAM, it took about 10 hours to generate a proof with OpenVM for the test `attestation_invalid_correct_attestation_included_after_max_inclusion_slot`. This creates a major issue in creating tests with extensive coverage that provide meaningful insights about various zkVMs. Additionally, different zkVMs are optimized for different scenarios: GPU versus CPU proving, high versus low number of execution cycles, and so on. 
+We have not implemented GPU optimization or any other optimization for proof generation. Generating a proof for a single test of a single STF operation currently crashes our laptops with 16GB RAM. On an old PC with a Ryzen 3400G and 32GB of RAM, it took about 10 hours to generate a proof with OpenVM for the test `attestation_invalid_correct_attestation_included_after_max_inclusion_slot`. This creates a major issue in creating tests with extensive coverage that provide meaningful insights about various zkVMs. Additionally, different zkVMs are optimized for different scenarios: GPU versus CPU proving, high versus low number of execution cycles, and so on.
 Our project is able to provide the following metrics: execution time, execution cycles (if implemented), and proof generation time for one or very few test cases.
 
-The second part of the project is more complicated as it involves lean consensus. Lean consensus is under development with many questions still open. At the same time, as we have already experienced in the first part of the project, zkVMs are still slow for our use cases. These two factors impose some limitations on our project. We generate a proof every 200 slots and we did not manage to test validation because setting up a network with proving initialized created issues both inside Docker and locally. Currently we use RISC Zero, but we plan to abstract it soon so that all 6 zkVMs become available. Our design introduces proving as an additional feature to the Ream client, leaving the core logic untouched. Further details are found in the associated [draft PR](https://github.com/ReamLabs/ream/pull/835). We had to modify networking by adding a `BlockProof` message, a proof gossip topic, and proof verification logic. We also created the usual guest-host pair, added proof triggers, and two structs: 
+The second part of the project is more complicated as it involves lean consensus. Lean consensus is under development with many questions still open. At the same time, as we have already experienced in the first part of the project, zkVMs are still slow for our use cases. These two factors impose some limitations on our project. We generate a proof every 200 slots and we did not manage to test validation because setting up a network with proving initialized created issues both inside Docker and locally. Currently we use RISC Zero, but we plan to abstract it soon so that all 6 zkVMs become available. Our design introduces proving as an additional feature to the Ream client, leaving the core logic untouched. Further details are found in the associated [draft PR](https://github.com/ReamLabs/ream/pull/835). We had to modify networking by adding a `BlockProof` message, a proof gossip topic, and proof verification logic. We also created the usual guest-host pair, added proof triggers, and two structs:
 ```rust
 pub struct BlockProof {
     pub block: Block,
@@ -83,11 +83,9 @@ This concludes the fellowship.
 
 ## Possible challenges
 
-- Each zkVM presents a different design that affects our implementation. It is possible that we face substantial overhead when optimizing our state transition function to speed up proving and validation because there are multiple zkVMs.
-- Unexpected bugs or obstacles on the zkVM side. So far, I encountered an issue with the OpenVM Quickstart guide, and Unnawut had to put effort into making RISC Zero work with $2^{40}$ lists. See [Resources](#resources). The issue with long lists will probably arise in OpenVM as well because the maximum memory address for an OpenVM program is $2^{29}$ bytes, as shown in the warning [here](https://book.openvm.dev/writing-apps/write-program.html).
-- zkVMs are evolving rapidly, so we must account for the current pace of development and possibly change our project roadmap accordingly.
-- Measuring proof generation time meaningfully across zkVMs is difficult because even for a single STF, proving time is very high. Additionally, a problem encountered with Jolt was that it was unable to generate a proof and the program was killed instead.
-- Since several things might be entirely replaced in Beam Chain (such as BLS signatures), it might not be very fruitful to optimize those STFs involving heavy changes.
+- Every zkVM implements optimisations differently, including GPU optimisation. Taking into account fast and breaking changes even on minor updates it is hard for our current project to stay updated and ever harder to optimize.
+- Ream's codebase is also evolving which could create some issues. We don't think that this will be as serious though since our implementation operates as a separate service that only handles proving.
+- Obtaining consinstent metrics accross zkVMs. Not all of them provide cycle counts for execution of functions in guest. Moreover, proof generation takes many hours which restricts us to testing very few cases.
 
 ## Goal of the project
 
@@ -109,5 +107,6 @@ Unnawut
 ## Resources
 
 - Current implementations for SP1 and RISC Zero: <https://github.com/ReamLabs/consensp1us> and <https://github.com/ReamLabs/consenzero-bench>
-- Utsav's Jolt code: <https://github.com/x-senpai-x/consenJolt>
-- OpenVM quickstart issue and solution: <https://github.com/openvm-org/openvm/issues/1816>
+- Dimitris' OpenVM implementation for the beacon chain: <https://github.com/DimitriosMitsios/openvm-ream>
+- Utsav's framework that incorporates Jolt, Pico, Zisk, RiscZero, SP1: <https://github.com/x-senpai-x/Ream-ZKVM-Benchmarks>
+- Our integration of RiscZero in lean chain: <https://github.com/DimitriosMitsios/ream/tree/leanprover>

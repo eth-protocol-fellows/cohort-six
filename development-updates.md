@@ -194,5 +194,5 @@ The final weeks of the cohort should mark the finalization of your project. Subm
 | [Vedant](https://github.com/vedant-asati)              |                                                                |                                                                                                                              |
 | [Vineet](https://github.com/vineetpant)                |                                                                |                                                                                                                              |
 | [Vlladin](https://github.com/vlladin)                  |                                                                |                                                                                                                              |
-| [Vukašin Marković](https://github.com/sntntn)          |                                                                |                                                                                                                              |
+| [Vukašin Marković](https://github.com/sntntn)          | [Tokio Tracing in Grandine](https://hackmd.io/i18x6kGmQz-UqO-XN7qS5A?view)|                                                                                                                              |
 

@@ -9,14 +9,12 @@ Enshrined Proposer Builder Separation (epbs) decouples execution payloads from c
  - In-protocol block auctions allow proposers to gain exposure to MEV rewards without relying on external relays
 
 ## Project Description 
-We will implement [EIP-7732](https://eips.ethereum.org/EIPS/eip-7732) in Lighthouse as it only contains CL modifications.
+We will implement [EIP-7732](https://eips.ethereum.org/EIPS/eip-7732) in [Lighthouse](https://github.com/sigp/lighthouse) as it only contains CL modifications.  The focus will be on implementing the parts of the spec necessary for self-building a block without blobs since that is the target requirement for the Gloas `devnet-0` launch.
 
 Scope:
 - **CL Block/body changes**: Include signed execution bids and payload attestations in addition to remove the execution payload
 - **Validator duties**: Implement PTC message production/aggregation and include aggregates in the next block
 - **Networking**: Add gossip support for new libp2p topics
-- **Fork-choice**: Traversal and tip selection consistent with the [consensus spec](https://ethereum.github.io/consensus-specs/specs/_features/eip7732/fork-choice/)
-
 
 ## Specification
 1. `BeaconBlockBody` is gossiped as part of a `BeaconBlock` across the network.  It used to have an `execution_payload`, which contained the full transaction list.  Instead, it will now have a lightweight payload header signed by the builder, plus payload timeliness attestations from the previous slot.
@@ -58,19 +56,7 @@ pub struct BeaconState {
 }
 ```
 
-3. We will add a `builder` duty in-protocol that is responsible for constructing an execution bid committing to releasing an `ExecutionPayload` later in the block if the proposer includes the bid in the `BeaconBlockBody`:
-```rust
-pub fn builder_duty(slot: Slot) {
-    let bid = build_bid(slot);                    // commit to header + value
-    gossip("execution_payload_header", bid);
-    if bid_included_in_beacon_block(slot) {
-        let payload = build_payload_envelope(bid);    // matches committed header
-        gossip("execution_payload", payload);         // before PTC deadline
-    }
-}
-```
-
-4. A Payload Timeliness Committee (PTC) will consist of 512 validators per slot and attest to whether a builder revealed their payload timely within the slot.  The `PayloadAttestationMessage` will be gossiped from committee members and aggregated by the proposer as to include in the `BeaconBlockBody`:
+3. A Payload Timeliness Committee (PTC) will consist of 512 validators per slot and attest to whether a builder revealed their payload timely within the slot.  The `PayloadAttestationMessage` will be gossiped from committee members and aggregated by the proposer as to include in the `BeaconBlockBody`:
 ```rust
 pub struct PayloadAttestationData {
     // the HTR of the beacon block seen for the assigned slot
@@ -84,14 +70,13 @@ pub struct PayloadAttestationData {
 }
 ```
 
-5. The block proposal flow will be modified such that the proposer will receive bids from builders, select the highest bid, and then broadcast a  block including the bid and aggregated `PayloadAttestation`:
+4. The block proposal flow will be modified such that the proposer will request a block, which will include a bid instead of a payload, and then broadcast a block including the bid and aggregated `PayloadAttestation`:
 ```rust
 fn propose_block() {
-    // select the best bid for the slot
-    let bid = select_best_bid(slot);
+    let bid = get_bid(slot);
     let body = BeaconBlockBody {
         // existing fields
-        signed_execution_bid: {block_hash, value, ...},
+        signed_execution_payload_bid: {block_hash, value, ...},
         payload_attestations: collect_previous_slots_ptc(),
     };
     
@@ -99,7 +84,7 @@ fn propose_block() {
 }
 ```
 
-6.  Then, when receiving a new block gossiped by the proposer, the validator will process withdrawals and the `ExecutionPayloadHeader` without having to wait for the EL to process transactions anymore before attesting to block validity:
+5.  Then, when receiving a new block gossiped by the proposer, the validator will process withdrawals and the `ExecutionPayloadBid` without having to wait for the EL to process transactions anymore before attesting to block validity:
 ```rust
 fn process_block(state: BeaconState, block: BeaconBlock) {
     process_withdrawals(state);
@@ -107,11 +92,11 @@ fn process_block(state: BeaconState, block: BeaconBlock) {
 }
 ```
 ```rust
-fn process_execution_payload_header(state: BeaconState, block: BeaconBlock) {
+fn process_execution_payload_bid(state: BeaconState, block: BeaconBlock) {
     // Verify the header signature
     let signed_header = block.body.signed_execution_payload_header;
     assert!(
-        verify_execution_payload_header_signature(state, signed_header)
+        verify_execution_payload_bid_signature(state, signed_header)
     );
 
     // Check that the builder is active, non-slashed, and has funds to cover the bid
@@ -136,7 +121,7 @@ fn process_execution_payload_header(state: BeaconState, block: BeaconBlock) {
 }
 ```
 
-7. Before the PTC deadline during a slot, the builder will reveal and gossip the`ExecutionPayload` inside a `SignedExecutionPayloadEnvelope` including transactions, which will be passed from the the CL to the EL like today for validation.  The validator will now execute `process_execution_payload` upon receiving the `SignedExecutionPayloadEnvelope`:
+6. Before the PTC deadline during a slot, the proposer will release the self-built `ExecutionPayload` inside a `SignedExecutionPayloadEnvelope` including transactions, which will be passed from the the CL to the EL like today for validation.  The validator will now execute `process_execution_payload` upon receiving the `SignedExecutionPayloadEnvelope`:
 ```rust
 fn process_execution_payload(
     state: BeaconState,
@@ -158,16 +143,7 @@ fn process_execution_payload(
 }
 ```
 
-8. Fork-choice will incorperate payload timeliness into `head` selection by tracking whether a block's payload is `PENDING`, `EMPTY`, or `FULL`:
-```rust
-struct ForkChoiceNode {
-    root: Root,
-    payload_status: PayloadStatus, // PENDING | EMPTY | FULL
-}
-```
-At each step, fork choice will make a payload decision and move to the selected `FULL` or `EMPTY` child. For the slot before the tip, both `FULL` and `EMPTY` have weight 0, so a payload tiebreaker uses PTC signaling. The `FULL` child is only selectable if the payload body is locally available.
-
-9. New libp2p gossip topics:
+7. New libp2p gossip topics:
     - `execution_payload_header` will be submitted by the builder and contain the bid
     - `execution_payload` will be sent by the builder to reveal the payload before the PTC deadline
     - `payload_attestation_message` will be gossiped by the PTC committee members
@@ -181,46 +157,48 @@ With these updates, Lighthouse will properly decouple the `ExecutionPayload` fro
 **Deliverables:**
 - SSZ serialization for all new containers, i.e. `SignedExecutionPayloadEnvelope`
 - Extend `BeaconBlockBody` and `BeaconState` with EPBS fields
-- Register libp2p topics with stub handlers
+- Handle backwards compatibility of pre-gloas blocks that rely on deprecated `BeaconBlockBody` and `BeaconState` fields
 
-**Success Criteria:** All new containers serialize/deserialize correctly, and topic stubs are invoked in networking tests.
+**Success Criteria:** All new containers serialize/deserialize correctly and `lighthouse` compiles successfully.
 
-### Phase 2: Builder Flow (Weeks 10–13)
+### Phase 2: Block Processing (Weeks 10–13)
 **Deliverables:**
-- Add builder duty per [consensus specs](https://ethereum.github.io/consensus-specs/specs/_features/eip7732/builder/)
-- Proposer bid selection and inclusion of `SignedExecutionBid` in `BeaconBlockBody`
-- Record builder to proposer pending payment in `BeaconState` and roll into `builder_pending_withdrawals` at epoch boundary
-- Process `SignedExecutionPayloadEnvelope` or withheld message with slot timing enforcement
+- Add `process_execution_payload_bid` to verify builder signatures, check builder balance covers bid amount, validate slot and parent block hash, and record pending payment in `BeaconState`
+- Add `process_payload_attestations` to verify ptc votes during block verification
+- Modify `process_withdrawals` to handle both standard and builder pending withdrawals
+- Add `process_builder_pending_payments` in epoch processing to move qualifying payments to `builder_pending_withdrawals` with proper exit queue and churn calculations
 
-**Success Criteria:** Valid bids are accepted, invalid ones rejected, and payloads are marked FULL or EMPTY as expected.
+**Success Criteria:** Valid bids are accepted and payments recorded. PTC attestations properly verified
 
-### Phase 3: PTC and Fork-Choice (Weeks 14–19)
+### Phase 3: Validator Client and PTC (Weeks 14–17)
 **Deliverables:**
-- Implement PTC committee, gossip handling, and proposer aggregation into the next block
-- Extend fork choice nodes with `payload_status` (`PENDING`, `FULL`, `EMPTY`)
-- Implement fork-choice rules per [consensus specs](https://ethereum.github.io/consensus-specs/specs/_features/eip7732/fork-choice/)
+- Modify VC to beacon node request for block with `SignedExecutionBid` instead of full payload via beacon node API during block proposal
+- Add PTC committee selection using balance weighted algorithm
+- Add PTC message production for committee members to attest to payload and blob data availability
+- For self-building, request and sign `SignedExecutionPayloadEnvelope` from beacon node before PTC deadline
 
-**Success Criteria:** Fork choice selects the correct head across FULL and EMPTY cases.
+**Success Criteria:** Proposers successfully request new gloas blocks. PTC members correctly selected.  Self-built payloads signed and broadcast before deadline.
 
-### Phase 4: Testing and Benchmarking (Weeks 20–21)
+### Phase 4: Networking (Weeks 18–21)
 **Deliverables:**
-- Kurtosis devnet scenarios to emulate different builder behaviors, i.e. valid or withheld payload
-- Fix any race conditions or consensus mismatches found in testing
+- Add gossip topics `execution_payload_header` (builder bids), `execution_payload` (execution envelopes), and `payload_attestation_message` (PTC vote)
+- Add request/response protocol handlers for retrieving execution payload envelopes by range and by root
+- Create validation pipelines for bids, ptc votes, and envelopes
 
-**Success Criteria:** Devnet finalizes blocks correctly and benchmarks pass within target thresholds.
+**Success Criteria:** All new gossip topics properly validated and propagated.
 
 
 
 ## Possible challenges
 - Maintaining backward compatibility pre-fork boundary
-    - Fork-choice head selection with (root, payload_status) nodes adds complexity
     - Pipelined slot structure requires PTC validation and handling of new libp2p topics
     - CL managing builder payments is non-trivial
-- Consensus spec changes (FOCIL compatibility, dual deadline PTC, payment flow changes)
+- Consensus spec changes are evergreen such as modifications to block processing, trustless payments, and ptc committee selection
+- Some specs don't exist yet, such as epbs beacon api endpoints
 
 
 ## Goal of the project
-The overarching goal is to implement EIP-7732 in Lighthouse so that execution payloads are decoupled from consensus blocks, enabling payload validation after the attestation deadline.  The builder’s reveal and withhold paths must work end-to-end so that nodes converge on the same head, finalize without unnecessary reorgs, and maintain stability under all payload availability scenarios. We want a correct and maintainable implementation that integrates cleanly with existing Lighthouse components and is ready for testing on devnets ahead of the Glamsterdam hardfork.
+The overarching goal is to implement EIP-7732 in Lighthouse so that execution payloads are decoupled from consensus blocks, enabling payload validation after the attestation deadline. We want a correct and maintainable implementation that integrates cleanly with existing Lighthouse components and moves the needles towards the `devnet-0` release.
 
 ## Collaborators
 
@@ -231,6 +209,7 @@ The overarching goal is to implement EIP-7732 in Lighthouse so that execution pa
 Lighthouse - [Mark](https://github.com/ethdreamer)
 
 ## Resources
-[Lighthouse Github](https://github.com/sigp/lighthouse)
-[EIP-7732](https://eips.ethereum.org/EIPS/eip-7732)
-[Consensus Specs](https://ethereum.github.io/consensus-specs/specs/_features/eip7732/beacon-chain/)
+- [Lighthouse Github](https://github.com/sigp/lighthouse)
+- [EIP-7732](https://eips.ethereum.org/EIPS/eip-7732)
+- [ePBS Consensus Specs](https://ethereum.github.io/consensus-specs/specs/gloas/beacon-chain/)
+- [Beacon Api Specs](https://github.com/ethereum/beacon-APIs)

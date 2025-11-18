@@ -53,6 +53,10 @@ Planned steps:
 3. **CLI integration** (`packages/cli/src/cmds/era/`): Add `lodestar era inspect|verify|extract` commands with JSON output.
 4. **Sync integration** (`packages/beacon-node/src/sync/eraSource.ts`): Implement `EraSource` that feeds blocks/states to Lodestar’s sync pipeline.
 
+### Zig-Side Contributions
+
+In parallel to the ERA work, three EIP implementations were completed (EIP-7916, EIP-7495, EIP-8016) along with Fulu specifications for the State Transition zig library. Progressive types development passed specification tests across multiple categories including Progressive List, Progressive Bitlist, and Progressive Containers.
+
 ## Roadmap
 
 1. **Week 8–10** – Implement reading and writing of `.era` files.

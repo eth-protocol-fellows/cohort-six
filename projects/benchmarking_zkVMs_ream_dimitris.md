@@ -4,7 +4,7 @@ Benchmarking zero-knowledge proof generation and validation of state transition 
 
 ## Motivation
 
-Ream is a lean consensus client. During the first months of its development, a beacon chain consensus implementation was also developed mainly for testing and learning. This project follows the same path. First, we worked on executing beacon chain STFs inside zkVMs, and then moving into lean consensus. 
+Ream is a lean consensus client. During the first months of its development, a beacon chain consensus implementation was also developed mainly for testing and learning. This project follows the same path. First, we worked on executing beacon chain STFs inside zkVMs, and then moving into lean consensus.
 Lean consensus proposes chain snarkification—converting CL state updates into zk-provable computations. Under this model, block proposers execute and prove state transitions, while validators verify proofs. Because verification is dramatically cheaper than execution, this model enables validators to run on constrained hardware (smartphones, Raspberry Pi-class devices), improving decentralization.
 
 This project provides two main benefits to the Ream team:
@@ -67,19 +67,19 @@ Consensus is achieved using 3-slot-finality, specifically a simplified version c
 ## Specification
 ### Beacon Chain Implementation
 
-Implementation of the first part of the project was straightforward. The guest code was found in `consenzero-bench/methods/guest/src/main.rs` of RiscZero or `consensp1us/program/operations/src/main.rs` of SP1. The same was done with modules in `lib`. The host program was built according to the SDK instruction provided by each zkVM. 
+Implementation of the first part of the project was straightforward. The guest code was found in `consenzero-bench/methods/guest/src/main.rs` of RiscZero or `consensp1us/program/operations/src/main.rs` of SP1. The same was done with modules in `lib`. The host program was built according to the SDK instruction provided by each zkVM.
 
 Each implementation followed the same pattern:
-- **OpenVM** : The instructions are found in the SDK section of the [OpenVM book](https://book.openvm.dev/advanced-usage/sdk.html#using-stdin) specifying: 
+- **OpenVM** : The instructions are found in the SDK section of the [OpenVM book](https://book.openvm.dev/advanced-usage/sdk.html#using-stdin) specifying:
      -  the preambles that should be added to the guest program
     - the code to be added in host to build, transpile and prove the guest
 
 
-- **Jolt** (`guest/jolt/src/main.rs`): Implemented using the `#[jolt::provable]` macro annotation system. 
+- **Jolt** (`guest/jolt/src/main.rs`): Implemented using the `#[jolt::provable]` macro annotation system.
 
 - **Pico** (`guest/app/src/main.rs`): Built using the Pico SDK with `pico_sdk::io` for input/output operations. Requires Rust nightly.
 
-- **Zisk** (`guest/zisk/src/main.rs`): Implemented with `ziskos` runtime using the `entrypoint!` macro and bincode serialization. 
+- **Zisk** (`guest/zisk/src/main.rs`): Implemented with `ziskos` runtime using the `entrypoint!` macro and bincode serialization.
 
 All implementations share the `lib/` crate for consistent operation handling across backends. The host CLI in `host/src/bin/main.rs` uses Cargo feature gates (`sp1`, `risc0`, `zisk`, `pico`, `jolt`) to enable the selected zkVM backend at compile time.
 
@@ -87,17 +87,17 @@ All implementations share the `lib/` crate for consistent operation handling acr
 
 We did not implement GPU optimization or other advanced optimizations for proof generation during the fellowship. Generating a proof for a single test of a single state transition function operation currently crashes laptops with 16GB RAM due to memory exhaustion.
 
-On a desktop with a Ryzen 3400G and 32GB of RAM, it took approximately 10 hours to generate a proof with OpenVM for the test `attestation_invalid_correct_attestation_included_after_max_inclusion_slot`. On a MacBook Pro M1 (10 cores, 24GB RAM), it took 4.5 hours to generate the proof for `attestation_invalid_correct_attestation_included_after_max_inclusion_slot` and 6 hours for `basic_attestation` using SP1.
+On a desktop with a Ryzen 3400G and 64GB of RAM, it took approximately 10 hours to generate a proof with OpenVM for the test `attestation_invalid_correct_attestation_included_after_max_inclusion_slot`. On a MacBook Pro M1 (10 cores, 64GB RAM), it took 4.5 hours to generate the proof for `attestation_invalid_correct_attestation_included_after_max_inclusion_slot` and 6 hours for `basic_attestation` using SP1.
 
 This created a major constraint in running multiple tests with extensive coverage since we would have needed more than 60 hours of proving for a single test across 6 zkVMs. Additionally, different zkVMs are optimized for different scenarios: GPU versus CPU proving, high versus low execution cycle counts, and varying proof system backends (STARK, SNARK, Groth16, PLONK).
 
-Our project provides the following metrics for each zkVM backend: execution time, execution cycles, individual suboperation time (if implemented by the respective zkVM), and proof generation time for one or very few test cases. 
+Our project provides the following metrics for each zkVM backend: execution time, execution cycles, individual suboperation time (if implemented by the respective zkVM), and proof generation time for one or very few test cases.
 
 ### Lean Chain Implementation
 
-The second part of the project is more complicated as it involves lean consensus. Lean Chain is under development with many questions still open. At the same time, as we have already experienced in the first part of the project, zkVMs are still slow for our use cases. These two factors impose some limitations on our project. 
+The second part of the project is more complicated as it involves lean consensus. Lean Chain is under development with many questions still open. At the same time, as we have already experienced in the first part of the project, zkVMs are still slow for our use cases. These two factors impose some limitations on our project.
 
-We generate a proof every 200 slots and we did not manage to test validation because setting up a network with proving initialized created issues both inside Docker and locally. Currently we use RISC Zero, but we plan to abstract it soon so that all 6 zkVMs become available. Our design introduces proving as an additional feature to the Ream client, leaving the core logic untouched. Further details are found in the associated [draft PR](https://github.com/ReamLabs/ream/pull/835). 
+We generate a proof every 200 slots and we did not manage to test validation because setting up a network with proving initialized created issues both inside Docker and locally. Currently we use RISC Zero, but we plan to abstract it soon so that all 6 zkVMs become available. Our design introduces proving as an additional feature to the Ream client, leaving the core logic untouched. Further details are found in the associated [draft PR](https://github.com/ReamLabs/ream/pull/835).
 
 #### LeanProverService Architecture
 
@@ -146,8 +146,8 @@ fn main() {
 1. Create a modular framework that runs STFs inside Jolt, Pico, ZisK, OpenVM, Risc0 and SP1 (OpenVM is temporarily excluded, we have to fix some dependency issues).
 2. Add execution-time and cycle-count benchmarking across zkVMs.
 3. Learn about 3-slot finality for Lean-Consensus.
-4. Integrate LeanProverService inside the LeanChain to invoke zkVM for producing block and executing the STF. 
-5. Gossip the LeanBlockProof to the peers and validate the proof. 
+4. Integrate LeanProverService inside the LeanChain to invoke zkVM for producing block and executing the STF.
+5. Gossip the LeanBlockProof to the peers and validate the proof.
 
 This concludes the fellowship.
 
@@ -162,7 +162,7 @@ This concludes the fellowship.
 The goal was to evaluate zkVM feasibility for Ream’s beacon chain and lean chain STFs, and to build tooling to support multi-zkVM benchmarking.
 
 During the fellowship, we achieved:
-- Execution-time and cycle-count measurements for 6 zkVMs 
+- Execution-time and cycle-count measurements for 6 zkVMs
 - Proof-generation time measurements for selected operations
 - A unified cross-zkVM benchmarking framework with support for multiple proof types
 - Prototype integration of proving into Ream's lean consensus via `LeanProverService`

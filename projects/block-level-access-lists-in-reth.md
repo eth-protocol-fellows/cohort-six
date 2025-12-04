@@ -23,13 +23,13 @@ EIP-7928 introduces **Block-Level Access Lists** (BALs), which record all accoun
 This project will allow creation of Block-Level Access List that will mark an integral step towards stateless Ethereum. We are implementing changes according to the EIP, execution specs and tests in Reth EL client.
 
 ## Specification
-Eip-7928 proposes adding two new fields to the block structure. One is `BlockAccessList` to the block body and other is `bal_hash` to the block header, which contains the hash of the `BlockAccessList` so that it can be easily verified.
+Eip-7928 proposes adding two new fields to the block structure. One is `BlockAccessList` to the block body and other is `block_access_list_hash` to the block header, which contains the hash of the `BlockAccessList` so that it can be easily verified.
 ```rust
 pub struct Header {
 ...// Existing Fields
     
     /// [EIP-7928]: https://eips.ethereum.org/EIPS/eip-7928
-    pub bal_hash: Option<B256>,
+    pub block_access_list_hash: Option<B256>,
 }
 
 pub struct BlockBody<T, H = Header> {
@@ -44,15 +44,12 @@ pub struct BlockBody<T, H = Header> {
 
 #### The `BlockAccessList` structure will look like:
 ```rust
-pub struct BlockAccessList {
-    /// List of account changes in the block.
-    pub account_changes: Vec<AccountChanges>,
-}
+pub type BlockAccessList = Vec<AccountChanges>;
 
 pub struct AccountChanges {
     /// The address of the account whoose changes are stored.
     pub address: Address,
-    /// List of storage changes for this account.
+    /// List of slot changes for this account.
     pub storage_changes: Vec<SlotChanges>,
     /// List of storage reads for this account.
     pub storage_reads: Vec<StorageKey>,
@@ -72,31 +69,31 @@ pub struct SlotChanges {
 }
 
 pub struct StorageChange {
-    /// Index of the transaction that performed the write.
-    pub tx_index: TxIndex,
+    /// Index of the bal that stores the performed write.
+    pub block_access_index: BlockAccessIndex,
     /// The new value written to the storage slot.
-    pub new_value: StorageValue,
+    pub new_value: B256,
 }
 
 pub struct BalanceChange {
-    /// The index of the transaction that caused this balance change.
-    pub tx_index: TxIndex,
+    /// The index of bal that stores balance change.
+    pub block_access_index: BlockAccessIndex,
     /// The post-transaction balance of the account.
-    pub post_balance: u128,
+    pub post_balance: U256,
 }
 
 pub struct NonceChange {
-    /// The index of the transaction that caused this nonce change.
-    pub tx_index: TxIndex,
+    /// The index of bal that stores this nonce change.
+    pub block_access_index: BlockAccessIndex,
     /// The new code of the account.
     pub new_nonce: u64,
 }
 
 pub struct CodeChange {
-    /// The index of the transaction that caused this code change.
-    pub tx_index: TxIndex,
+    /// The index of bal that stores this code change.
+    pub block_access_index: BlockAccessIndex,
     /// The new code of the account.
-    pub new_code: Vec<Bytes>,
+    pub new_code: Bytes,
 }
 ```
 As per the discussion, we will use rlp serialization instead of the ssz. 
@@ -110,14 +107,17 @@ We will modify the [revm](https://github.com/bluealloy/revm) to trace the change
 
 In the `state_transition(block)` we will:
 1. Iterate over all the transactions in block and execute them. 
-2. Store the changes in BAL proposed core structures.
+2. Store the changes concerning transaction,pre and post execution in BAL proposed core structures.
 3. Build `BlockAccessList` using  the proposed `build_block_access_list` function in the eip.
 4. Validate the `BlockAccessList` with the `bal_hash`.
+
+#### Engine Api Changes
+Add new payload,`ExecutionPayloadV4` which is similar to V3 but contains BlockAccessList field.Add methods like `engine_getPayloadV6` and `engine_newPayloadV5`.
 ## Roadmap
 Since the eip is relatively new, we will like to spend some more time in researching and understanding it. A rough time line will look something like:
 
 **3-4 Weeks:** Modification of the block:
-* Adding the `BlockAccessList` and `bal_hash`throughout the code base. 
+* Adding the `BlockAccessList` and `block_access_list_hash` throughout the code base. 
 * Fixing  tests.
 
 **5-10 Weeks:** Implementation of the functionality as per EIP:
@@ -125,11 +125,12 @@ Since the eip is relatively new, we will like to spend some more time in researc
 - Tracking  of the storage changes.
 - Tracking of the balance changes.
 - Tracking of the nonce changes.
-* Tracking of the code changes.
+- Tracking of the code changes.
 
 **11 - 15 Weeks:** Assembling the tracked changes for *BAL*:
 * Modifying the `state_transition` function.
 * Implementing `build_block_access_list` as per the requirement of the EIP.
+* Adding Engine Api changes.
 
 **16 - 20 Weeks:** Refactoring and optimizing the work:
 * Improve the existing work based on review.

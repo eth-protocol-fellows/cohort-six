@@ -11,7 +11,7 @@ This project is mainly going to implement the automatically restart feature for 
 
 ## Project description
 
-This project aims to complete the remaining implementation of EIP-6916 in the [Besu client](https://github.com/hyperledger/besu), focusing specifically on the reset feature on the database, network, and peer discovery, along with Geth-style genesis parsing compatibility, and enabling the bootnode command to read from a file or URL; however, the bootnodes are not dynamic. At the end, if done with Besu sooner than planned, I will research the feasibility of the same features on [the Teku consensus client](https://github.com/Consensys/teku).
+This project aims to complete the remaining implementation of EIP-6916 in the [Besu client](https://github.com/hyperledger/besu), focusing specifically on the reset feature on the database, network, and peer discovery. At the end, if done with Besu sooner than planned, I will research the feasibility of the same features on [the Teku consensus client](https://github.com/Consensys/teku).
 
 
 ## Specification
@@ -46,20 +46,6 @@ When the network passed to the command is Ephemery, it reads from Ephemery genes
 - Rediscover new peers: Rediscover new peers by starting over the `start()` method inside the `PeerDiscoveryController` class via the `PeerDiscoveryAgent` class. 
 
 - Add new peers: invoking the `addToPeerTable(final DiscoveryPeer peer)` function inside the `PeerDiscoveryController` class will add new peers.
-
-
-#### Enable --bootnodes to read enode URLs from a file or remote URL
-
-- Changing the logic of the --bootnode command to not just read from the command parameter but also read from a file. This will enable the Ephemery testnet implementation to download a file, such as [boot nodes,](https://ephemery.dev/latest/metadata/enodes.txt) from a fixed URL. The BesuCommand class should be extended for enabling this functionality.
-
-
-#### Geth-style genesis parsing
-
-- The genesis file in the Geth client, or in general in other genesis files, such as Ehemery-genesis, has some more or less parameters that need another parsing method to be valid.
-
-- This feature can be developed via adding a layer to the map and distinguishing between a Besu config style and others by adding the GenesisAdapter class. 
-
-- It's better to be written as generally as possible to be compatible with other clients (not just Geth) and also forward and backward compatible.
 
 
 #### Enable the Besu client itself to become a bootnode. 
@@ -105,7 +91,7 @@ I hope the implementation of this proposal takes me less than 22 weeks, so I wil
 - Review previous Ephemery-related PRs and discussions by other fellows from previous cohorts: Glory from cohort5 and Teri and Holly from cohort4. &check;
 
 
-#### Weeks 6 and 7
+#### Weeks 6 and 7 
 
 - Deep dive into the Besu codebase to come up with a proper plan on implementation for the proposal. &check;
 
@@ -113,73 +99,67 @@ I hope the implementation of this proposal takes me less than 22 weeks, so I wil
 
 - Presentation on my project proposal at office-hour calls. &check;
 
-- Review and rewrite the project proposal based on my mentor's feedback. 
+- Review and rewrite the project proposal based on my mentor's feedback. &check;
 
-- Write up about how to run Ephemery on Besu and Teku as an amateur user.
+- Write up about how to run Ephemery on Besu and Teku as an amateur user. &check;
 
 
 #### Weeks 8 and 9
 
-- Research on the 'restart network' task.
+- Research on the 'restart network' task. &check;
 
-- Implement the task.
+- Implement the task. &check;
 
 
 #### Weeks 10 and 11
 
-- Research on the 'reset DB' task.
+- Research on the 'reset DB' task. &check;
 
-- Implement the task.
+- Implement the task. &check;
 
 
 #### Weeks 12 and 13
 
-- Write tests for 'restart network' and 'reset DB.'
+- Write tests for 'restart network' and 'reset DB.' &check;
 
-- Add any documentation that is needed for the tasks.
+- Add any documentation that is needed for the tasks. &check;
 
 
 #### Weeks 14 and 15
 
-- Research on the 'reset peers' task.
+- Research on the 'reset peers' task. &check;
 
-- Implement the task.
+- Implement the task. &check;
 
 
 #### Weeks 16 and 17
 
-- Plan and implement to enable the bootnode command to read from a file or URL.
+- Write test for 'reset peers' task. &check;
 
-- Implement the task.
-
-- Write related tests.
+- Write related documents. &check;
 
 
 #### Weeks 18 and 19
 
-- Start working on an idea to parse the genesis file in a more general way so that it is in compliance with other client genesis.
+- Research on how to enable the Besu client itself to become a bootnode. &check;
 
-- Implement the task.
-
-- Write related tests.
+- Write related documents. &check;
 
 
 #### Weeks 20 and 21
 
-- research on how to enable the Besu client itself to become a bootnode.
+- Implement the task. &check;
 
-- Implement the task.
-
-- Write related tests. 
+- Write related tests. &check;
 
 
 #### Week 22
 
-- Work on undone tasks that have been mentioned.
+- Work on undone tasks that have been mentioned. &check;
 
 - Research on Teku to see if the reset feature is possible to implement, if I have time.
 
-- Prepare for the final presentation.
+- Prepare for the final presentation. &check;
 
 
 ## Possible challenges
@@ -200,10 +180,6 @@ The remaining tasks of this project have been tagged with good-first-issue. Howe
 - Add database reset for the Ephemery network on restart.
 
 - Restart peers discovery and discard old peers at each new Ephemery cycle.
-
-- Allowing Besu to parse a Geth-style genesis like other clients.
-
-- Allow --bootnodes to read from a file on the Besu client.
 
 - A Besu node, when running Ephemery, becomes a bootnode itself.
 
